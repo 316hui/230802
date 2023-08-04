@@ -1,4 +1,4 @@
-package database
+package com.example.a230802.database
 
 import androidx.room.Dao
 import androidx.room.Delete
