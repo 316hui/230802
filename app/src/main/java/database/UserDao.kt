@@ -13,11 +13,12 @@ interface UserDao {
     fun getUser() : UserEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertUser(entity: UserEntity)
+    fun insertInfo(entity: UserEntity)
 
     @Update
-    fun updateMember(entity: UserEntity)
+    fun updateInfo(entity: UserEntity)
 
     @Delete
-    fun deleteMember(entity: UserEntity)
+    fun deleteInfo(entity: UserEntity)
+    //() 안 블록에서 삭제하려는 특정 사용자를 전달
 }

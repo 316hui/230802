@@ -13,7 +13,7 @@ abstract class UserDatabase : RoomDatabase(){
     companion object {
         private var instance: UserDatabase? = null
 
-        @Synchronized
+        @Synchronized //Java와 Kotlin에서 사용되는 동기화(synchronization) 관련 어노테이션
         fun getInstance(context: Context): UserDatabase? {
             if (instance == null){
                 instance = Room.databaseBuilder(

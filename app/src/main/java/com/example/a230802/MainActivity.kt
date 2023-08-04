@@ -16,7 +16,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val database = UserDatabase.getInstance(this)!!
@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         with(binding) {
             btnSave.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    database.userDao().insertUser(
+                    database.userDao().insertInfo(
                         UserEntity(
                             name = etName.text.toString(),
                             age = etAge.text.toString(),
@@ -43,32 +43,51 @@ class MainActivity : AppCompatActivity() {
                         나이 : ${user.age}
                         생년월일 : ${user.birth}
                     """.trimIndent()
+                        // 들여쓰기를 제거하여 문자열의 왼쪽 가장자리를 정렬하는 역할 / """ <-은 문자열의 형태를 그대로 유지
                     }
                 }
             }
             btnDelete.setOnClickListener {
-                val user = UserEntity(etName)
+                val userDelete = database.userDao().getUser()
 
+                //가져온 데이터가 있다면
+                if (userDelete != null) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        database.userDao().deleteInfo(userDelete)
+
+                        launch(Dispatchers.Main) {
+                            Toast.makeText(
+                                this@MainActivity,
+                                "사용자 정보가 삭제되었습니다.",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        //UserDao 에서 entity 데이터를 다 모으는 함수 gerUser를 변수로 만들어 인자로 넣음.
+                    }
+                }
             }
+
             btnUpdate.setOnClickListener {
                 val newName = etName.text.toString()
                 val newAge = etAge.text.toString()
                 val newBirth = etBirth.text.toString()
 
-                if (newName.isNotBlank() && newAge.isNotBlank() && newBirth.isNotBlank()) {
-                    //Dispatchers를 사용하여 코루틴이 동작할 스레드를 지정 / 메인 스레드를 차단하지 않으면서 I/O 작업 (파일 읽기쓰기, 네트워크 요청)을 수행하는 데 적합한 스레드를 제공
-                    lifecycleScope.launch(Dispatchers.IO) {
-                        val currentUser = database.userDao().getUser()
-
-                        if (currentUser != null) {
-                            val updatedUser = currentUser.copy(name = newName,age = newAge, birth = newBirth)
-                            database.userDao().updateMember(updatedUser)
-                            Toast.makeText(, "", Toast.LENGTH_SHORT).show()
-                        } //update 구현
-
-                    }
+                lifecycleScope.launch(Dispatchers.IO) {
+                    database.userDao().updateInfo(
+                        UserEntity(
+                            name = newName,
+                            age = newAge,
+                            birth = newBirth
+                        )
+                    )
                 }
+
             }
+
         }
     }
 }
+
+
+
+
